@@ -1,11 +1,13 @@
 import { useState } from "react";
+import type { Load } from "./models/types";
+import { calculateStatics } from "./utils/calculations";
 
-function App() {
+function App() {    // componente principal de la aplicación, donde se maneja el estado y la lógica para agregar cargas y calcular el consumo
   const [km, setKm] = useState("");
   const [litros, setLitros] = useState("");
-  const [cargas, setCargas] = useState<any[]>([]);
   const [consumo, setConsumo] = useState(0);
-
+  const [cargas, setCargas] = useState<Load[]>([]);
+// se definen los estados para los kilómetros, litros, consumo y las cargas registradas, utilizando useState para manejar el estado de la aplicación
   const agregarCarga = () => {
     const nuevaCarga = {
       km: Number(km),
@@ -17,22 +19,15 @@ function App() {
     setKm("");
     setLitros("");
   };
+// función para agregar una nueva carga de combustible a la lista de cargas//
+const calcularConsumo = () => {
+  const result = calculateStatics(cargas);
 
-  const calcularConsumo = () => {
-    if (cargas.length > 1) {
-      const kmRecorridos =
-        cargas[cargas.length - 1].km - cargas[0].km;
-
-      const litrosTotales = cargas.reduce(
-        (acc, c) => acc + c.litros,
-        0
-      );
-
-      const resultado = kmRecorridos / litrosTotales;
-      setConsumo(Number(resultado.toFixed(2)));
-    }
-  };
-
+  if (result) {
+    setConsumo(Number(result.averageConsumption.toFixed(2)));
+  }
+};
+// función para calcular el consumo total utilizando la función calculateStatics, y si se obtiene un resultado válido, se actualiza el estado de consumo con el valor del consumo promedio formateado a dos decimales
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6">
       <h1 className="text-3xl font-bold mb-6">
